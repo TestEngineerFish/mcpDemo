@@ -25,13 +25,18 @@ async def web_search(query: str) -> str:
                 if not search_results:
                     continue
                 for result in search_results:
-                    res_data.append(result)
+                    # 将字典转换为字符串
+                    if isinstance(result, dict):
+                        result_str = f"标题: {result.get('title', '')}\n链接: {result.get('link', '')}\n摘要: {result.get('snippet', '')}"
+                        res_data.append(result_str)
+                    else:
+                        res_data.append(str(result))
         return '\n\n\n'.join(res_data)
     
     
 async def main():
     # 调用异步函数并获取返回值
-    result = await web_search('python 3.12 安装')
+    result = await web_search('你好用英文怎么说？')
     print(result)
     
 if __name__ == "__main__":
