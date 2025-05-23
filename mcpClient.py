@@ -13,19 +13,24 @@ from mcp.client.stdio import stdio_client
 
 load_dotenv()
 
+API_KEY = os.getenv("OPENAI_API_KEY")
+BASE_URL = os.getenv("OPENAI_BASE_URL")
+MODEL = os.getenv("OPENAI_MODEL")
+
 
 class MCPClient:
+    print(API_KEY, BASE_URL, MODEL)
     def __init__(self):
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
-        self.client = OpenAI()
+        self.client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
         
     # 然后我们添加 connect_to_server 方法来初始化我们的 MCP 服务器的 session。
     async def connect_to_server(self):
         server_params = StdioServerParameters(
             command='uv',
-            args=['run', 'web_search.py'],
-            env=None
+            args=['run', '--with', 'mcp', 'mcp', 'run', 'web_search.py'],
+            # env=None
         )
 
         stdio_transport = await self.exit_stack.enter_async_context(
@@ -69,7 +74,7 @@ class MCPClient:
 
         # 请求 deepseek，function call 的描述信息通过 tools 参数传入
         response = self.client.chat.completions.create(
-            model=os.getenv("OPENAI_MODEL"),
+            model=MODEL,
             messages=messages,
             tools=available_tools
         )
@@ -96,7 +101,7 @@ class MCPClient:
 
             # 将上面的结果再返回给 deepseek 用于生产最终的结果
             response = self.client.chat.completions.create(
-                model=os.getenv("OPENAI_MODEL"),
+                model=MODEL,
                 messages=messages,
             )
             return response.choices[0].message.content

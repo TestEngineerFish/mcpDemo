@@ -1,5 +1,4 @@
-
-# 客户端
+# 客户端连接MCPServer的工具
 import asyncio
 
 from mcp.client.stdio import stdio_client
@@ -13,7 +12,7 @@ from mcp.types import (
 
 server_params = StdioServerParameters(
     command='uv',
-    args=['run', 'file_server.py'],
+    args=['run', '--with', 'mcp', 'mcp', 'run', 'web_search.py'],
 )
 
 
@@ -36,20 +35,24 @@ async def sampling_callback(
 
 
 async def main():
+    # 创建 stdio 客户端
     async with stdio_client(server_params) as (stdio, write):
-        async with ClientSession(
-                stdio, write,
-                # 设置 sampling_callback 对应的方法
-                sampling_callback=sampling_callback
-        ) as session:
+        # 创建 ClientSession 对象
+        async with ClientSession(stdio, write) as session:
+            # 初始化 ClientSession
             await session.initialize()
-            res = await session.call_tool(
-                'delete_file',
-                {'file_path': '/Users/sam/Desktop/WechatIMG3877.jpg'}
+            # 列出可用的工具
+            response = await session.list_tools()
+            print(response)
+            print("4、list_tools")
+            response = await session.call_tool(
+                'web_search',
+                {'query': '你好用英文怎么说？'}
             )
             # 获取工具最后执行完的返回结果
-            print(res)
+            print(response)
 
 
 if __name__ == '__main__':
     asyncio.run(main())
+

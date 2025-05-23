@@ -218,6 +218,7 @@ dependencies = [
     { name = "httpx", extra = ["socks"] },
     { name = "mcp", extra = ["cli"] },
     { name = "openai" },
+    { name = "python-dotenv" },
 ]
 
 [package.metadata]
@@ -225,6 +226,7 @@ requires-dist = [
     { name = "httpx", extras = ["socks"], specifier = ">=0.28.1" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.9.0" },
     { name = "openai", specifier = ">=1.81.0" },
+    { name = "python-dotenv", specifier = ">=1.1.0" },
 ]
 
 [[package]]
